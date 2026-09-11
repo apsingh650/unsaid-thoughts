@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Unsaid Thought — Lost Everything in the Memory</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Georgia', serif;
+    }
+
+    body {
+      background-color: #0d0d10;
+      color: #f5f5f5;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* -------------------------------------------
+       PRIVACY LOCK SCREEN
+    ------------------------------------------- */
+    #loginScreen {
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(circle at center, #181820 0%, #060608 100%);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 1.5rem;
+      z-index: 1000;
+      transition: opacity 0.4s ease, visibility 0.4s ease;
+    }
+
+    #loginScreen.hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .login-box {
+      background: rgba(22, 22, 26, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(16px);
+      padding: 3rem 2.2rem;
+      border-radius: 18px;
+      width: 100%;
+      max-width: 400px;
+      text-align: center;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+    }
+
+    .login-box h2 {
+      font-size: 1.8rem;
+      font-weight: 400;
+      letter-spacing: 1px;
+      color: #fafafa;
+      margin-bottom: 0.5rem;
+    }
+
+    .login-box p {
+      font-size: 0.9rem;
+      color: #71717a;
+      font-style: italic;
+      margin-bottom: 2rem;
+    }
+
+    .input-group {
+      margin-bottom: 1.25rem;
+      text-align: left;
+    }
+
+    .input-group label {
+      display: block;
+      font-family: sans-serif;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: #a1a1aa;
+      margin-bottom: 0.4rem;
+    }
+
+    .input-group input {
+      width: 100%;
+      background: #0d0d10;
+      border: 1px solid #27272a;
+      border-radius: 8px;
+      padding: 0.85rem 1rem;
+      color: #fff;
+      font-size: 1rem;
+      outline: none;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .input-group input:focus {
+      border-color: #ff7e5f;
+      box-shadow: 0 0 0 3px rgba(255, 126, 95, 0.15);
+    }
+
+    .login-btn {
+      width: 100%;
+      background: linear-gradient(135deg, #ff7e5f, #feb47b);
+      border: none;
+      color: #121212;
+      font-family: sans-serif;
+      font-weight: 700;
+      font-size: 0.9rem;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      padding: 0.95rem;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 0.8rem;
+      transition: transform 0.2s ease, opacity 0.2s ease;
+    }
+
+    .login-btn:hover {
+      opacity: 0.92;
+      transform: translateY(-2px);
+    }
+
+    #loginError {
+      font-family: sans-serif;
+      font-size: 0.82rem;
+      color: #f87171;
+      margin-top: 1rem;
+      min-height: 1.2rem;
+    }
+
+    /* -------------------------------------------
+       SITE HEADER
+    ------------------------------------------- */
+    header {
+      text-align: center;
+      padding: 4.5rem 1.5rem 2rem;
+      position: relative;
+    }
+
+    .lock-btn {
+      position: absolute;
+      top: 1.5rem;
+      right: 2rem;
+      background: transparent;
+      border: 1px solid #27272a;
+      color: #71717a;
+      padding: 0.45rem 0.95rem;
+      border-radius: 20px;
+      font-family: sans-serif;
+      font-size: 0.78rem;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .lock-btn:hover {
+      border-color: #a1a1aa;
+      color: #fafafa;
+    }
+
+    header h1 {
+      font-size: 2.3rem;
+      letter-spacing: 0.5px;
+      margin-bottom: 0.6rem;
+      font-weight: 500;
+    }
+
+    header p {
+      font-size: 1.1rem;
+      color: #888;
+      font-style: italic;
+    }
+
+    /* -------------------------------------------
+       4 STAGE BLOCKS
+    ------------------------------------------- */
+    .grid-container {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.5rem;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 1.5rem;
+      width: 100%;
+    }
+
+    .card {
+      border-radius: 16px;
+      padding: 2.5rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 270px;
+      cursor: pointer;
+      transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.3s ease;
+      text-decoration: none;
+    }
+
+    .card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 16px 32px rgba(0, 0, 0, 0.5);
+    }
+
+    .card-tag {
+      font-family: sans-serif;
+      font-size: 0.82rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      opacity: 0.85;
+      font-weight: 700;
+    }
+
+    .card h2 {
+      font-size: 1.7rem;
+      margin: 0.8rem 0 0.5rem;
+      line-height: 1.3;
+    }
+
+    .card p {
+      font-size: 0.96rem;
+      line-height: 1.6;
+      opacity: 0.9;
+    }
+
+    .card-footer {
+      font-family: sans-serif;
+      font-size: 0.82rem;
+      margin-top: 1.5rem;
+      font-weight: bold;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .block-1 {
+      background: linear-gradient(135deg, #e67e22, #f39c12);
+      color: #1a1a1a;
+    }
+
+    .block-2 {
+      background: linear-gradient(135deg, #2c3e50, #4ca1af);
+      color: #ffffff;
+    }
+
+    .block-3 {
+      background: linear-gradient(135deg, #8e2de2, #4a00e0);
+      color: #ffffff;
+    }
+
+    .block-4 {
+      background: linear-gradient(135deg, #232526, #090a0f);
+      color: #d1d5db;
+      border: 1px solid #27272a;
+    }
+
+    /* -------------------------------------------
+       THANK-YOU NOTE CARD (NEW PARAGRAPH AFTER BLOCKS)
+    ------------------------------------------- */
+    .note-wrapper {
+      max-width: 1100px;
+      margin: 2rem auto 2.5rem;
+      padding: 0 1.5rem;
+      width: 100%;
+    }
+
+    .thankyou-card {
+      background: linear-gradient(180deg, rgba(26, 26, 32, 0.8) 0%, rgba(18, 18, 22, 0.95) 100%);
+      border: 1px solid rgba(255, 255, 255, 0.09);
+      border-radius: 18px;
+      padding: 3rem 2.5rem;
+      position: relative;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+    }
+
+    .thankyou-card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 10%;
+      right: 10%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255, 126, 95, 0.6), transparent);
+    }
+
+    .thankyou-tag {
+      font-family: sans-serif;
+      font-size: 0.8rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: #ff9e7d;
+      margin-bottom: 0.8rem;
+      display: inline-block;
+      font-weight: 600;
+    }
+
+    .thankyou-card h3 {
+      font-size: 1.8rem;
+      font-weight: 400;
+      color: #fafafa;
+      margin-bottom: 1.5rem;
+      line-height: 1.4;
+    }
+
+    .thankyou-body p {
+      font-size: 1.05rem;
+      line-height: 1.9;
+      color: #cfcfe1;
+      margin-bottom: 1.2rem;
+    }
+
+    .thankyou-body p:last-child {
+      margin-bottom: 0;
+      font-weight: 600;
+      color: #ffffff;
+    }
+
+    /* -------------------------------------------
+       SIDE-BY-SIDE LETTER & PHOTO SECTION
+    ------------------------------------------- */
+    .letter-section {
+      max-width: 1100px;
+      margin: 1.5rem auto 6rem;
+      padding: 0 1.5rem;
+      width: 100%;
+    }
+
+    .letter-container {
+      background: #141418;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 18px;
+      padding: 2.5rem;
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 2.5rem;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+    }
+
+    .letter-text-side {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .letter-tag {
+      font-family: sans-serif;
+      font-size: 0.8rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: #ff9e7d;
+      margin-bottom: 0.6rem;
+      display: block;
+      font-weight: 600;
+    }
+
+    .letter-text-side h3 {
+      font-size: 1.8rem;
+      font-weight: 400;
+      color: #fafafa;
+      margin-bottom: 1.5rem;
+    }
+
+    .transcript-box {
+      background: rgba(8, 8, 10, 0.6);
+      border: 1px solid #222228;
+      border-radius: 12px;
+      padding: 1.8rem;
+      line-height: 1.8;
+      color: #d5d5e2;
+      font-size: 1.02rem;
+      font-style: italic;
+      white-space: pre-line;
+      margin-bottom: 1.5rem;
+    }
+
+    .page-divider {
+      font-family: sans-serif;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: #71717a;
+      margin: 1.2rem 0;
+      display: block;
+      border-bottom: 1px dashed #33333d;
+      padding-bottom: 0.3rem;
+      font-style: normal;
+    }
+
+    /* Images Side */
+    .letter-images-side {
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+      justify-content: center;
+    }
+
+    .photo-card {
+      background: #09090b;
+      border: 1px solid #27272a;
+      border-radius: 12px;
+      padding: 0.8rem;
+      text-align: center;
+      transition: transform 0.3s ease, border-color 0.3s ease;
+    }
+
+    .photo-card:hover {
+      transform: scale(1.02);
+      border-color: #555;
+    }
+
+    .photo-card img {
+      width: 100%;
+      max-height: 280px;
+      object-fit: contain;
+      border-radius: 8px;
+      background-color: #000;
+      cursor: zoom-in;
+    }
+
+    .photo-label {
+      font-family: sans-serif;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: #888;
+      margin-top: 0.5rem;
+      display: block;
+    }
+
+    /* -------------------------------------------
+       READING POPUP MODAL
+    ------------------------------------------- */
+    .modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.88);
+      justify-content: center;
+      align-items: center;
+      padding: 1.5rem;
+      z-index: 100;
+      backdrop-filter: blur(5px);
+    }
+
+    .modal-content {
+      background: #16161a;
+      color: #d4d4d8;
+      max-width: 680px;
+      width: 100%;
+      max-height: 82vh;
+      overflow-y: auto;
+      border-radius: 14px;
+      padding: 2.5rem;
+      position: relative;
+      line-height: 1.85;
+      font-size: 1.08rem;
+      border: 1px solid #27272a;
+    }
+
+    .modal-tag {
+      font-family: sans-serif;
+      font-size: 0.8rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: #a1a1aa;
+      margin-bottom: 0.4rem;
+      display: block;
+    }
+
+    .modal-title {
+      font-size: 2.1rem;
+      margin-bottom: 1.5rem;
+      color: #fafafa;
+      line-height: 1.3;
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 1.2rem;
+      right: 1.5rem;
+      font-size: 2rem;
+      background: none;
+      border: none;
+      color: #71717a;
+      cursor: pointer;
+      line-height: 1;
+    }
+
+    .close-btn:hover {
+      color: #fff;
+    }
+
+    /* Fullscreen Image Preview */
+    #imageModal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.95);
+      z-index: 1500;
+      justify-content: center;
+      align-items: center;
+      padding: 1rem;
+      cursor: zoom-out;
+    }
+
+    #imageModal img {
+      max-width: 95%;
+      max-height: 95vh;
+      object-fit: contain;
+      border-radius: 8px;
+    }
+
+    @media (max-width: 860px) {
+      .grid-container {
+        grid-template-columns: 1fr;
+      }
+      .letter-container {
+        grid-template-columns: 1fr;
+      }
+      header h1 {
+        font-size: 1.8rem;
+      }
+      .lock-btn {
+        top: 1rem;
+        right: 1rem;
+      }
+      .thankyou-card {
+        padding: 2rem 1.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- PRIVACY LOCK SCREEN -->
+  <div id="loginScreen">
+    <div class="login-box">
+      <h2>Private Archive</h2>
+      <p>Enter your credentials to unlock.</p>
+      
+      <form onsubmit="handleLogin(event)">
+        <div class="input-group">
+          <label for="username">Username</label>
+          <input type="text" id="username" autocomplete="off" required />
+        </div>
+        
+        <div class="input-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" required />
+        </div>
+
+        <button type="submit" class="login-btn">Unlock Archive</button>
+        <div id="loginError"></div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MAIN SITE -->
+  <header>
+    <button class="lock-btn" onclick="lockPage()">Lock Archive &#128274;</button>
+    <h1>Unsaid Thought — Lost Everything in the Memory</h1>
+    <p>A timeline of unspoken feelings across the years.</p>
+  </header>
+
+  <!-- 4 STAGES GRID -->
+  <main class="grid-container">
+    <article class="card block-1" onclick="openStory('stage1')">
+      <div>
+        <span class="card-tag">Stage 1: Class 4 to 6</span>
+        <h2>The Pure Connection</h2>
+        <p>Jab pehli baar dekha aur baat shuru hui. Bas ek jhalak dekhne se din ban jata tha, aur class mein notes share hona regular tha.</p>
+      </div>
+      <span class="card-footer">Read Chapter &rarr;</span>
+    </article>
+
+    <article class="card block-2" onclick="openStory('stage2')">
+      <div>
+        <span class="card-tag">Stage 2: Class 7 to 8</span>
+        <h2>The Distance / The Fade</h2>
+        <p>Sections change hone ke baad interaction dheere-dheere kam ho gaya. Batein almost na ke barabar, bas dur se ek jhalak aur rare conversations.</p>
+      </div>
+      <span class="card-footer">Read Chapter &rarr;</span>
+    </article>
+
+    <article class="card block-3" onclick="openStory('stage3')">
+      <div>
+        <span class="card-tag">Stage 3: Class 9 to 12</span>
+        <h2>The Turmoil / Ups & Downs</h2>
+        <p>Full emotional rollercoaster. Daily nonstop chatting, lekin saath me jealousy, third wheel feel hona, aur dosti ke beech ka confusion.</p>
+      </div>
+      <span class="card-footer">Read Chapter &rarr;</span>
+    </article>
+
+    <article class="card block-4" onclick="openStory('stage4')">
+      <div>
+        <span class="card-tag">Stage 4: Drop Year / Present</span>
+        <h2>The Void / Moving On</h2>
+        <p>Sab contact khatam. Roz dekhna band, bhari miss karna, yeh sochna ki kya samne se bhi feelings thi, aur aage move on karne ki tough koshish.</p>
+      </div>
+      <span class="card-footer">Read Chapter &rarr;</span>
+    </article>
+  </main>
+
+  <!-- THANK YOU NOTE (ADDED AFTER THE 4 BLOCKS) -->
+  <section class="note-wrapper">
+    <div class="thankyou-card">
+      <span class="thankyou-tag">Thank You Note</span>
+      <h3>A Parting Letter</h3>
+      <div class="thankyou-body">
+        <p>"I wanted to tell you this, even though I’m not sure if it’s the right or wrong thing to do—I’ve just been feeling exhausted.</p>
+        <p>Still, if you ever reach out, I will always be here for you. Anytime, anywhere, whenever you feel comfortable to message.</p>
+        <p>I also realize that whatever I'm saying today comes from wondering whether what I feel truly aligns with what you feel. I respect your space and your choices, and I know you are completely free to decide what’s best for you.</p>
+        <p>But I want you to know one thing: I will never forget you. You will always hold a special place in my heart, filled with memories and moments I truly cherish.</p>
+        <p>I’m sorry for everything, and I hope you can forgive me. I don’t know how you feel right now, but I genuinely wish you all the very best in your life ahead.</p>
+        <p>Thank you so much, always."</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SIDE-BY-SIDE HANDWRITTEN LETTER & PHOTO ATTACHMENTS -->
+  <section class="letter-section">
+    <div class="letter-container">
+      
+      <!-- Side 1: Word-for-Word Transcription -->
+      <div class="letter-text-side">
+        <div>
+          <span class="letter-tag">Unsent Handwritten Note</span>
+          <h3>Original Letter</h3>
+          <div class="transcript-box">"I want to tell you,
+I don't know, what
+am doing it is right or
+wrong, but I was
+exhausted from this.
+
+If you reach to me
+I will always
+be there.
+Anytime, and everywhere
+when you feel, msg
+
+And this time I also
+feel that, today what
+I am saying, after
+this what feels, mean
+that is it I feel from
+your feeling or not.
+
+I know you have also your
+willingness, I know that
+you are free to choose
+all the things
+
+All the very best to you
+ahead of
+your.
+
+<span class="page-divider">Page 2</span>
+But, I say you one
+thing I will never
+forget you, never
+never even.
+
+You remain in my
+heart with a
+one corner, with a
+special memories and
+moment.
+
+Sorry for all that.
+I don't know that how you
+feel right now?
+but forgive me.
+
+Thank you so much
+Always."</div>
+        </div>
+      </div>
+
+      <!-- Side 2: Attached Photo Pages -->
+      <div class="letter-images-side">
+        <div class="photo-card">
+          <img src="page1.jpg" alt="Handwritten Note Page 1" onclick="viewImage(this.src)" />
+          <span class="photo-label">Attached: Page 1 (Tap to zoom)</span>
+        </div>
+        <div class="photo-card">
+          <img src="page2.jpg" alt="Handwritten Note Page 2" onclick="viewImage(this.src)" />
+          <span class="photo-label">Attached: Page 2 (Tap to zoom)</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Reading Modal -->
+  <div id="readModal" class="modal" onclick="closeOnOutside(event)">
+    <div class="modal-content">
+      <button class="close-btn" onclick="closeModal()">&times;</button>
+      <span id="modalTag" class="modal-tag"></span>
+      <h2 id="modalTitle" class="modal-title"></h2>
+      <div id="modalBody"></div>
+    </div>
+  </div>
+
+  <!-- Fullscreen Image Zoom Overlay -->
+  <div id="imageModal" onclick="closeImageView()">
+    <img id="enlargedImg" src="" alt="Enlarged Note" />
+  </div>
+
+  <script>
+    const VALID_USER = "writer";
+    const VALID_PASS = "unsaid2026";
+
+    const storiesData = {
+      stage1: {
+        tag: "Stage 1: Class 4 to 6",
+        title: "The Pure Connection / Innocent Attraction",
+        body: `
+          <p>Uss umar mein feelings ka koi naam nahi hota tha. Par school aana achha lagne laga tha, aur wajah books ya classes nahi the—sirf tumhara hona tha.</p>
+          <br>
+          <p>Wo innocent attraction tha. Subah assemble hone ke baad ya class mein aate hi bas ek baar tumhe dekh lena poore din ko behtar bana deta tha. Bench par baith kar chhup-chhup ke dekhna, notes maangne ke bahaane baat karna, aur notebook exchange karte waqt ungliyon ka halke se touch ho jana. Us waqt na koi complications the, na kisi baat ka darr tha. Sab kuch itna simple aur saaf tha ki lagta tha bas yehi roz chalta rahe.</p>
+          <br>
+          <p>Hum dono ko pata bhi nahi chala ki kab wo aam si batein mere liye ek aisi aadat ban gayi jo aage chalkar itni gehri ho jayegi.</p>
+        `
+      },
+      stage2: {
+        tag: "Stage 2: Class 7 to 8",
+        title: "The Distance / The Fade",
+        body: `
+          <p>Aur fir ek naye session ke saath sections badal gaye. Wo doori physically bas do deewaron ki thi, par lagta tha jaise do alag sheher ban gaye hon.</p>
+          <br>
+          <p>Pehle jo roz ka milna aur batein hona routine tha, wo achanak 'rare moments' mein badal gaya. Corridors mein aate-jaate bas dur se ek doosre ko dekh lena, kabhi water cooler ke paas takra jaana, aur ajeeb si jhijhak ke saath ek choti si smile exchange kar lena. Man karta tha aage badh kar baat karein, par naye dost, nayi class aur badalte waqt ne ek aisi boundary khadi kar di jise todna aasan nahi tha.</p>
+          <br>
+          <p>Wo pehla waqt tha jab darr laga tha ki shayad tum mere bagair aage nikal gaye ho, aur main wahi purani yaadon ke sahare corridors me tumhara wait kar raha hoon.</p>
+        `
+      },
+      stage3: {
+        tag: "Stage 3: Class 9 to 12",
+        title: "The Turmoil / Ups & Downs",
+        body: `
+          <p>Ye chaar saal ek aisa toofan the jisne sab kuch ulajha kar rakh diya. Late-night nonstop chatting, ghanton har ek chhoti baat share karna—lagta tha koi humse zyaada close ho hi nahi sakta.</p>
+          <br>
+          <p>Lekin is kareeb aane ke saath wo chubhan aayi jisne andar se tod diya. Jab koi teesra insaan humare beech aaya, aur dekhte hi dekhte main side hota chala gaya. Wo pal jab tum dono saath hote aur main wahin khada hote hue bhi khud ko ek 'third wheel' mehsus karta tha. Ek aisi jealousy jise main kisi par claim bhi nahi kar sakta tha, kyunki humare rishte ka koi official label nahi tha.</p>
+          <br>
+          <p>Doston ke badalte chehre, jealousy, possessiveness, aur wo chubhti hui khamoshi—maine ek hi waqt mein tumse sabse zyada lagav bhi mehsus kiya, aur sabse akela bhi.</p>
+        `
+      },
+      stage4: {
+        tag: "Stage 4: Drop Year / Present",
+        title: "The Void / Longing & Moving On",
+        body: `
+          <p>School khatam hua, aur uske saath sab kuch toot kar bikhar gaya. Ab koi notification nahi aata, koi achanak milne ki umeed nahi bachi. Ek poora saal, aur yeh khali kamra.</p>
+          <br>
+          <p>Drop year ki is ladaai mein jahan dhyan kitabon par hona chahiye, dimag aksar purani chats aur purane corridors me bhatak jaata hai. Sabse zyada takleef is sawal se hoti hai: <em>kya yeh sab sirf mere dimag mein tha? Kya tumne bhi kabhi wahi sab mehsus kiya tha jo maine kiya, ya tumhare liye main bas waqt guzarne ka ek hissa tha?</em></p>
+          <br>
+          <p>Ab main move on karne ki koshish kar raha hoon. Par bhulana itna asaan nahi hota jab kisi insaan ki aadat bachpan se lekar jawani tak aapke har hisse me judi rahi ho. Tum ja chuke ho, par wo unkahi baatein abhi bhi wahin hain.</p>
+        `
+      }
+    };
+
+    let activeStories = null;
+
+    function handleLogin(e) {
+      e.preventDefault();
+      const user = document.getElementById('username').value.trim();
+      const pass = document.getElementById('password').value;
+      const errorDiv = document.getElementById('loginError');
+
+      if (user === VALID_USER && pass === VALID_PASS) {
+        activeStories = storiesData;
+        document.getElementById('loginScreen').classList.add('hidden');
+        document.getElementById('password').value = '';
+        errorDiv.innerText = '';
+      } else {
+        errorDiv.innerText = 'Galat username ya password.';
+        document.getElementById('password').value = '';
+      }
+    }
+
+    function lockPage() {
+      activeStories = null;
+      document.getElementById('username').value = '';
+      document.getElementById('password').value = '';
+      document.getElementById('loginScreen').classList.remove('hidden');
+    }
+
+    function openStory(key) {
+      if (!activeStories) return;
+      const story = activeStories[key];
+      document.getElementById('modalTag').innerText = story.tag;
+      document.getElementById('modalTitle').innerText = story.title;
+      document.getElementById('modalBody').innerHTML = story.body;
+      document.getElementById('readModal').style.display = 'flex';
+    }
+
+    function closeModal() {
+      document.getElementById('readModal').style.display = 'none';
+    }
+
+    function closeOnOutside(e) {
+      if (e.target.id === 'readModal') {
+        closeModal();
+      }
+    }
+
+    function viewImage(src) {
+      document.getElementById('enlargedImg').src = src;
+      document.getElementById('imageModal').style.display = 'flex';
+    }
+
+    function closeImageView() {
+      document.getElementById('imageModal').style.display = 'none';
+    }
+  </script>
+</body>
+</html>
